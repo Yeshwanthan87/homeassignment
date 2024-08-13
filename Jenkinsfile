@@ -8,25 +8,47 @@ pipeline {
             }
         }
 
+        stage('Setup Virtual Environment') {
+            steps {
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'python -m unittest discover'
+                sh '''
+                    . venv/bin/activate
+                    pytest
+                '''
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Docker Build') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        def app = docker.build("your-dockerhub-username/my-flask-app")
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push("latest")
+                    sh 'docker build -t yeshwanthan/my-flask-app .'
+                }
+            }
+        }
+        
+        stage('Docker Image Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin'
+                        sh 'docker push yeshwanthan/my-flask-app'
                     }
                 }
             }
@@ -35,7 +57,9 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh 'helm upgrade --install my-flask-app ./charts/my-flask-app'
+                    sh '''
+                        helm upgrade --install my-flask-app ./charts/my-flask-app
+                    '''
                 }
             }
         }

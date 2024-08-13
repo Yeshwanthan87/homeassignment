@@ -1,38 +1,20 @@
-
 replicaCount: 1
 
 image:
   repository: yeshwanthan/my-flask-app
   tag: latest
-  pullPolicy: Always
 
 service:
+  name: my-flask-app
   type: NodePort
-  port: 8084
-  nodePort: 3001
+  port: 80
+  nodePort: 30001
+
+imagePullSecrets:
+  - name: regcred
 
 ingress:
   enabled: false
   name: ""
-  path: /
-  host: chart-example.local
-  tls: []
-  annotations: {}
 
 resources: {}
-
-serviceAccount:
-  create: true
-  name: ""
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 1
-  targetCPUUtilizationPercentage: 80
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

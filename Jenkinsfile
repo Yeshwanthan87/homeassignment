@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo-url'
+                git branch: 'main', credentialsId: 'gitpassword', url: 'https://github.com/Yeshwanthan87/homeassignment.git'
             }
         }
 
@@ -43,12 +43,12 @@ pipeline {
 
     post {
         success {
-            mail to: 'team@example.com',
+            mail to: 'yeshwanthan87@gmail.com',
                  subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                  body: "The build succeeded! Check it out at ${env.BUILD_URL}"
         }
         failure {
-            mail to: 'team@example.com',
+            mail to: 'yeshwanthan87@gmail.com',
                  subject: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
                  body: "The build failed! Check it out at ${env.BUILD_URL}"
         }

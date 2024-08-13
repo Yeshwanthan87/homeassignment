@@ -1,3 +1,4 @@
+
 replicaCount: 1
 
 image:
@@ -6,13 +7,32 @@ image:
   pullPolicy: Always
 
 service:
-  type: LoadBalancer
-  port: 80
+  type: NodePort
+  port: 8084
+  nodePort: 3001
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+ingress:
+  enabled: false
+  name: ""
+  path: /
+  host: chart-example.local
+  tls: []
+  annotations: {}
+
+resources: {}
+
+serviceAccount:
+  create: true
+  name: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

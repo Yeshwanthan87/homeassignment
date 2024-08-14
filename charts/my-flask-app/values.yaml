@@ -1,18 +1,20 @@
 replicaCount: 1
 
 image:
-  repository: your-dockerhub-username/my-flask-app
+  repository: yeshwanthan/my-flask-app
   tag: latest
-  pullPolicy: Always
 
 service:
-  type: LoadBalancer
+  name: my-flask-app
+  type: NodePort
   port: 80
+  nodePort: 30001
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+imagePullSecrets:
+  - name: regcred
+
+ingress:
+  enabled: false
+  name: ""
+
+resources: {}

@@ -56,10 +56,33 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
+                sshagent(['openssh']) {
                     sh '''
-                        helm upgrade --install my-flask-app ./charts/my-flask-app
+                        ssh -o StrictHostKeyChecking=no ubuntu@43.206.254.0 '
+                            minikube start --driver=docker || true
+                            eval $(minikube -p minikube docker-env)
+                            helm lint ./my-flask-app
+                            helm upgrade --install my-flask-app ./my-flask-app --namespace default
+                        '
                     '''
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sshagent(['openssh']) {
+                    script {
+                        // Start port forwarding in the background
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no ubuntu@43.206.254.0 '
+                                kubectl get pods
+                                kubectl port-forward svc/my-flask-app 30001:80 --address 0.0.0.0 > /dev/null 2>&1 &
+                            '
+                        '''
+                        // Optionally, you can add a short sleep to allow some time for port forwarding to establish
+                        sleep time: 10, unit: 'SECONDS'
+                    }
                 }
             }
         }

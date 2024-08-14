@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 def get_public_ip():
     ip = requests.get('https://api.ipify.org').text
-    return f'Your Public IP is: {ip} and that is a project for BIGID Assignment'
+    return f'Your Public IP is: {ip} and that is a project for BIGID Assignment Yeshwanth'
 
 
 if __name__ == '__main__':
